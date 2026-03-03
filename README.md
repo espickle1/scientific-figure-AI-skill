@@ -58,7 +58,7 @@ Each subdirectory under `examples/` represents a different figure type. Every ex
 |---------|-------------|-----------|--------|
 | [Kaplan-Meier](examples/Kaplan-Meier/) | Survival curve | Claude, Gemini-Gems, Gemini-Lite | [README](examples/Kaplan-Meier/README.md) |
 | [Bradfords](examples/Bradfords/) | Standard curve (linear regression) | Claude, Gemini-Gems | [README](examples/Bradfords/README.md) |
-| [Time-series](examples/time-series/) | Growth curve with error bars | Claude, Gemini-Gems | [README](examples/time-series/README.md) |
+| [Time-series](examples/Time-series/) | Growth curve with error bars | Claude, Gemini-Gems | [README](examples/Time-series/README.md) |
 | [Mass_Spec](examples/Mass_Spec/) | Hybrid bar chart / dot heatmap | Claude | [README](examples/Mass_Spec/README.md) |
 | [bar_graph](examples/bar_graph/) | Grouped bar chart with t-tests | Claude | [README](examples/bar_graph/README.md) |
 | [heatmap](examples/heatmap/) | Metabolic output heatmap | Gemini-Gems | [README](examples/heatmap/README.md) |
