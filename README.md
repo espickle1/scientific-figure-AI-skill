@@ -1,11 +1,11 @@
-# Visualization Project
+# Scientific figure generation with words
 
 Publication-quality scientific figure generation from tabular data (CSV, TSV, XLS/XLSX), packaged as reusable prompts for AI assistants. Two agent variants are included — one for Claude, one for Gemini.
 
 ## Repository Structure
 
 ```
-visualization_project/
+scientific-figure-AI-skill/
 ├── examples/                  # Worked examples by figure type
 │   ├── Bradfords/
 │   ├── heatmap/
