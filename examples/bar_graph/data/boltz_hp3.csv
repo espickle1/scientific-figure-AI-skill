@@ -1,0 +1,25 @@
+﻿Sample,Type,Value
+hp3 kdo3,pred_prob," 0.6389617919921875,"
+hp3 kdo3,pred_prob," 0.8000665307044983,"
+hp3 kdo3,pred_prob,0.477857083
+hp3 o-ant,pred_prob," 0.2196793407201767,"
+hp3 o-ant,pred_prob," 0.07314134389162064,"
+hp3 o-ant,pred_prob,0.366217345
+hp31 kdo3,pred_prob," 0.6281192302703857,"
+hp31 kdo3,pred_prob," 0.827354371547699,"
+hp31 kdo3,pred_prob,0.428884119
+hp31 o-ant,pred_prob," 0.22992070019245148,"
+hp31 o-ant,pred_prob," 0.06443280726671219,"
+hp31 o-ant,pred_prob,0.395408601
+hp3 kdo3,pred_value," 0.9691342115402222,"
+hp3 kdo3,pred_value," 0.8737218976020813,"
+hp3 kdo3,pred_value," 1.0645465850830078,"
+hp3 o-ant,pred_value," 0.4149423837661743,"
+hp3 o-ant,pred_value," 1.0386534929275513,"
+hp3 o-ant,pred_value," -0.20876869559288025,"
+hp31 kdo3,pred_value," 0.9125527143478394,"
+hp31 kdo3,pred_value," 0.08113738894462585,"
+hp31 kdo3,pred_value," 1.7439680099487305,"
+hp31 o-ant,pred_value," 0.21338500082492828,"
+hp31 o-ant,pred_value," 0.7532997131347656,"
+hp31 o-ant,pred_value," -0.32652971148490906,"
