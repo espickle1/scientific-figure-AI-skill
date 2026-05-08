@@ -168,26 +168,40 @@ Statistics are always computed fresh from your data at runtime. The script never
 
 Gemini displays figures inline as PNG at 300 DPI. This is sufficient for most review and draft purposes.
 
-**For journal submission** (SVG, PDF, TIFF, EPS), run the generated script outside Gemini:
+**The generated script is a single `.py` file in jupytext percent format** — cell markers (`# %%`) are plain comments, so it runs as a regular script *and* opens as a notebook in any percent-aware environment. Pick whichever path matches your tools.
 
-### Google Colab (free, no setup)
+### Run as a script (simplest)
 
-1. Copy the script from Gemini (copy button on code block)
-2. Go to [colab.research.google.com](https://colab.research.google.com)
-3. Create a new notebook
-4. Paste the script into a cell
-5. Upload your data file (folder icon on left sidebar)
-6. Change `plt.show()` to:
-   ```python
-   for fmt in ["png", "svg", "pdf"]:
-       plt.savefig(f"figure.{fmt}", dpi=300, bbox_inches="tight")
-   plt.show()
-   ```
-7. Run the cell. Download files from the file browser.
+Save the script as `figure_vN.py`, put your data file alongside it, and run `python figure_vN.py`. The figure saves to `figure_vN.png` (and `.svg` if requested).
 
-### Local Python
+### Open as a notebook in your IDE (no conversion)
 
-If you have Python installed: save the script as a `.py` file, place your data file in the same folder, edit the data path in CONFIG if needed, and run `python figure_vN.py`.
+VS Code, Cursor, PyCharm Pro, and JupyterLab (with the jupytext extension) open percent-format `.py` files directly as notebooks. Each `# %%` becomes a cell, each `# %% [markdown]` becomes a markdown cell. Run cells individually or all at once.
+
+### Convert to a true `.ipynb` for Google Colab
+
+Colab itself only opens `.ipynb`. Two options:
+
+**Option A — convert locally first** (best if you want a real notebook in Colab):
+```bash
+pip install jupytext
+jupytext --to ipynb figure_vN.py
+```
+Then upload `figure_vN.ipynb` to [colab.research.google.com](https://colab.research.google.com) via **File → Upload notebook**.
+
+**Option B — paste into a single cell** (fastest if you don't need cell structure):
+1. Copy the script from Gemini
+2. Open a new Colab notebook, paste into one cell
+3. Upload your data file via the folder icon
+4. Run the cell. The `# %%` markers act as inline comments — the figure still renders.
+
+### Saving SVG / PDF for journal submission
+
+The Save cell in every script writes PNG by default. For vector formats, edit the Save cell:
+```python
+for fmt in ["png", "svg", "pdf"]:
+    fig.savefig(f"figure.{fmt}", dpi=300, bbox_inches="tight")
+```
 
 ---
 

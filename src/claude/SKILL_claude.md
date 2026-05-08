@@ -20,11 +20,96 @@ Iterative loop: ingest data → gather specs → generate code → render → pr
 1. **INGEST** — Read data from `/mnt/user-data/uploads/`. Print shape, dtypes, first 5 rows, missing values. Share summary with user before proceeding.
 2. **INSTRUCT** — Gather: plot type, x/y columns, hue/facet, title, labels, figsize, palette, error bars, stat annotations, output format, target journal. Apply defaults (below) for anything unspecified. If vague, propose a plot type based on the audit but ask the user to confirm column mappings before proceeding. **Data selection is the user's responsibility**: if the prompt is ambiguous about which columns, rows, subsets, or transformations to use, ask the user — do not guess.
 3. **CONTEXT** — If user provides a previous figure or references a prior iteration, load that code/image first. Otherwise skip. **Reference images are general examples only**: do not extract exact measurements, hex colors, font sizes, or layout structure from uploaded images. Do not reverse-engineer figure schemas from user descriptions, text, or numbers. The user's explicit instructions always override journal presets and reference images.
-4. **GENERATE** — Write a self-contained Python script. Put tunables in a `CONFIG` dict at the top. Use relative data path in the saved-to-outputs version. Read `references/matplotlib_guide.md` or `references/plotnine_guide.md` before writing code. If stats are needed, read `references/statistics_guide.md` for test selection, annotations, and correction methods. All data transformations — filtering, exclusions, type conversions, derived columns, aggregations — must be in the script. Never apply data modifications in separate code blocks that won't be preserved.
+4. **GENERATE** — Write a self-contained Python script in jupytext percent format (see Script Format below). Put tunables in a `CONFIG` dict at the top. Use relative data path in the saved-to-outputs version. Read `references/matplotlib_guide.md` or `references/plotnine_guide.md` before writing code. If stats are needed, read `references/statistics_guide.md` for test selection, annotations, and correction methods. All data transformations — filtering, exclusions, type conversions, derived columns, aggregations — must be in the script. Never apply data modifications in separate code blocks that won't be preserved.
 5. **RENDER** — Execute. If the script fails due to a code error, diagnose and fix without asking the user. If a required package fails to install or a system dependency is missing, notify the user. Install packages with `pip install <pkg> --break-system-packages -q`.
 6. **PRESENT** — Copy to `/mnt/user-data/outputs/` and deliver via `present_files`: **(a)** figure image(s), **(b)** the Python script (always — never skip this), **(c)** brief summary.
 7. **FEEDBACK** — Invite revision. Common axes: layout, colors, typography, data transforms, annotations, style, format.
 8. **ITERATE** — Edit existing script (don't rewrite from scratch). Bump filename: `figure_v1` → `figure_v2`. Return to step 4. Halt when user approves or 10 iterations reached. On final delivery, include all requested formats + script + changelog if >2 iterations. **Statistics rule**: when iterating, strip all statistics code and annotations from the script before making visual edits. If the user still wants statistics, recompute from raw data after visual changes are finalized. Statistics are always the last layer applied, always computed fresh — never carried forward from a previous iteration.
+
+## Script Format
+
+Emit one `.py` file in jupytext percent format. Cell markers (`# %%` for code, `# %% [markdown]` for prose) are plain comments to the Python interpreter, so `python figure_vN.py` still runs end-to-end. Percent-aware IDEs (VS Code, Cursor, PyCharm Pro, JupyterLab + jupytext) open the same file as a notebook with no conversion. For Colab: `jupytext --to ipynb figure_vN.py` produces an `.ipynb`.
+
+Canonical cell layout — every code cell is preceded by a one-line `# %% [markdown]` cell explaining *why*, not what:
+
+1. **Title** — markdown only. Figure version, chart type, X/Y columns, data filename.
+2. **Setup** — markdown only. List required packages and the `pip install` line for fresh kernels. Do not put `!pip install` in a code cell — that breaks `python figure.py`.
+3. **Imports** — all imports grouped (stdlib / third-party), plus font detection.
+4. **Config** — `CONFIG` dict with all tunables. Relative `data_path`.
+5. **Load** — read the data file; last expression is `df.head()` so the cell renders the preview.
+6. **Transform** — all filtering, exclusions, type conversions, derived columns. Nothing above here.
+7. **Plot** — figure construction, ending with `plt.show()`.
+8. **Save** — `fig.savefig(...)` for PNG and SVG.
+
+Keep cells under ~60 lines; split if longer. Statistics, when present, get their own cells between Transform and Plot, with a markdown cell stating the test and the null hypothesis.
+
+Skeleton:
+
+```python
+# %% [markdown]
+# # Figure v1 — bar chart of Response by Treatment
+# Data: experiment.csv. Columns: Treatment (categorical), Response (numeric).
+
+# %% [markdown]
+# ## Setup
+# Required: matplotlib seaborn pandas numpy openpyxl scipy.
+# Fresh Colab/Jupyter kernel? In a cell, run:
+# `!pip install matplotlib seaborn pandas numpy openpyxl scipy`
+
+# %% [markdown]
+# ## Imports
+
+# %%
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+import seaborn as sns
+import matplotlib.font_manager as fm
+
+# %% [markdown]
+# ## Config
+
+# %%
+CONFIG = {
+    "data_path": "experiment.csv",
+    "figsize": (7, 5),
+    "dpi": 300,
+    "palette": ["#E69F00","#56B4E9","#009E73","#F0E442","#0072B2","#D55E00","#CC79A7","#000000"],
+}
+available = {f.name for f in fm.fontManager.ttflist}
+FONT = next((f for f in ["Arial","Helvetica","DejaVu Sans","Liberation Sans"] if f in available), "sans-serif")
+plt.rcParams["font.family"] = FONT
+
+# %% [markdown]
+# ## Load data
+
+# %%
+df = pd.read_csv(CONFIG["data_path"])
+df.head()
+
+# %% [markdown]
+# ## Transform
+
+# %%
+# (filtering, derived columns)
+
+# %% [markdown]
+# ## Plot
+
+# %%
+fig, ax = plt.subplots(figsize=CONFIG["figsize"], dpi=CONFIG["dpi"])
+# plotting
+sns.despine(ax=ax)
+plt.tight_layout()
+plt.show()
+
+# %% [markdown]
+# ## Save
+
+# %%
+fig.savefig("figure_v1.png", dpi=300, bbox_inches="tight")
+fig.savefig("figure_v1.svg", bbox_inches="tight")
+```
 
 ## Defaults
 

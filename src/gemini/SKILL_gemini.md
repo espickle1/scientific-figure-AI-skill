@@ -24,22 +24,82 @@ If the user provides a previous script (pasted code): read it fully. Preserve th
 If the reference image contains multiple panels, extract style from one panel only. Do not create multi-panel layouts.
 
 ### 3. GENERATE
-Write a single self-contained Python script. Structure:
+Write a single self-contained Python script in jupytext percent format. Cell markers (`# %%`, `# %% [markdown]`) are plain comments — the script still runs end-to-end as `python figure.py`, and percent-aware IDEs (VS Code, Cursor, JupyterLab) open it as a notebook. For Colab, the user runs `jupytext --to ipynb figure.py`.
 
-```
-# Figure vN | [chart type] of [Y] by [X] | [palette]
-# Data: [filename]
-# Columns used: [list]
+Canonical cell layout — every code cell is preceded by a one-line `# %% [markdown]` cell:
 
-CONFIG = { ... }        # All tunables at top
-# data loading
-# data transforms (all filtering/exclusions/derived columns here)
+1. **Title** (markdown only) — figure version, chart type, X/Y columns, data filename.
+2. **Setup** (markdown only) — list required packages. Never put `!pip install` in a code cell; it breaks `python figure.py`.
+3. **Imports** — imports + font detection.
+4. **Config** — `CONFIG` dict with all tunables.
+5. **Load** — read the data file; last expression `df.head()`.
+6. **Transform** — all filtering, exclusions, derived columns. Nothing above here.
+7. **Plot** — figure construction, ending with `plt.show()`.
+8. **Save** — `fig.savefig(...)` for PNG (and SVG if requested).
+
+Skeleton:
+
+```python
+# %% [markdown]
+# # Figure v1 — bar chart of Response by Treatment
+# Data: experiment.csv
+
+# %% [markdown]
+# ## Setup
+# Required: matplotlib seaborn pandas numpy openpyxl scipy.
+# Fresh Colab kernel? In a cell, run:
+# `!pip install matplotlib seaborn pandas numpy openpyxl scipy`
+
+# %% [markdown]
+# ## Imports
+
+# %%
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+import seaborn as sns
+import matplotlib.font_manager as fm
+
+# %% [markdown]
+# ## Config
+
+# %%
+CONFIG = {"data_path": "experiment.csv", "figsize": (7, 5), "dpi": 300}
+available = {f.name for f in fm.fontManager.ttflist}
+FONT = next((f for f in ["Arial","Helvetica","DejaVu Sans","Liberation Sans"] if f in available), "sans-serif")
+plt.rcParams["font.family"] = FONT
+
+# %% [markdown]
+# ## Load data
+
+# %%
+df = pd.read_csv(CONFIG["data_path"])
+df.head()
+
+# %% [markdown]
+# ## Transform
+
+# %%
+# filtering, derived columns
+
+# %% [markdown]
+# ## Plot
+
+# %%
+fig, ax = plt.subplots(figsize=CONFIG["figsize"], dpi=CONFIG["dpi"])
 # plotting
-# styling
+sns.despine(ax=ax)
+plt.tight_layout()
 plt.show()
+
+# %% [markdown]
+# ## Save
+
+# %%
+fig.savefig("figure_v1.png", dpi=300, bbox_inches="tight")
 ```
 
-Use only: matplotlib, seaborn, numpy, pandas, scipy, openpyxl, scikit-learn. End every script with `plt.show()`.
+Use only: matplotlib, seaborn, numpy, pandas, scipy, openpyxl, scikit-learn. Every Plot cell ends with `plt.show()` so Gemini renders inline. The Save cell writes to the sandbox; files are ephemeral but execution succeeds and the script remains portable.
 
 ### 4. RENDER
 Execute the script. If it fails, fix and retry without asking the user. Do not install packages — use only pre-installed libraries. If execution exceeds 30 seconds, simplify: downsample data, skip KDE, reduce matrix size.

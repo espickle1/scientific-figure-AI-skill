@@ -45,6 +45,16 @@ INGEST → INSTRUCT → CONTEXT → GENERATE → RENDER → PRESENT → FEEDBACK
 | **FEEDBACK** | Invite revision (layout, colors, typography, data transforms, annotations, style) |
 | **ITERATE** | Edit existing script (bump `figure_v1` → `figure_v2`). Statistics are stripped during visual edits and recomputed fresh as the last layer. Halt when user approves or 10 iterations reached |
 
+## Output
+
+A single `.py` file in jupytext percent format. Cell markers (`# %%` for code, `# %% [markdown]` for prose) are plain Python comments, so the same file:
+
+- Runs as a script: `python figure_vN.py`
+- Opens as a notebook (no conversion) in VS Code, Cursor, PyCharm Pro, or JupyterLab with the jupytext extension
+- Converts to a real `.ipynb` for Colab in one step: `pip install jupytext && jupytext --to ipynb figure_vN.py`
+
+Cell layout: Title → Setup → Imports → Config → Load → Transform → Plot → Save, with a one-line markdown cell above each code cell explaining why that step exists.
+
 ## Defaults
 
 | Parameter | Default | Rationale |

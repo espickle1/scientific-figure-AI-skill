@@ -50,6 +50,10 @@ Budget ~4–6 revision rounds before the context fills up. Batch changes into si
 
 For full details, see the variant READMEs: [Claude](src/claude/README_claude.md) | [Gemini](src/gemini/README_gemini.md)
 
+## Output
+
+Every variant produces a single `.py` file in [jupytext percent format](https://jupytext.readthedocs.io/en/latest/formats-scripts.html). It runs as a regular script (`python figure_vN.py`), opens directly as a notebook in VS Code / Cursor / PyCharm / JupyterLab (no conversion), and becomes a true `.ipynb` for Colab via `jupytext --to ipynb figure_vN.py`. One artifact, every audience.
+
 ## Examples
 
 Each subdirectory under `examples/` represents a different figure type. Every example includes source data, iteratively refined scripts and figures, and full conversation logs.
