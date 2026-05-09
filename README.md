@@ -1,6 +1,6 @@
 # Scientific figure generation with words
 
-Publication-quality scientific figure generation from tabular data (CSV, TSV, XLS/XLSX), packaged as reusable prompts for AI assistants. Two agent variants are included — one for Claude, one for Gemini.
+Publication-quality scientific figure generation from tabular data (CSV, TSV, XLS/XLSX), packaged as reusable prompts for AI assistants. Three agent variants are included — Claude, Gemini, and Microsoft Copilot.
 
 ## Repository Structure
 
@@ -15,7 +15,8 @@ scientific-figure-AI-skill/
 │   └── Time-series/
 └── src/
     ├── claude/                # Claude version
-    └── gemini/                # Gemini version
+    ├── gemini/                # Gemini version
+    └── copilot/               # Microsoft Copilot version
 ```
 
 ## Quick Start
@@ -46,9 +47,17 @@ Optional: also upload `statistics_guide_claude.md` if you need statistical tests
 
 Budget ~4–6 revision rounds before the context fills up. Batch changes into single messages to save tokens.
 
+### Microsoft Copilot (copilot.microsoft.com)
+
+**Option A — Custom Instructions (persistent):** paste the contents of `src/copilot/SKILL_copilot.md` into Settings → Personalize → Custom Instructions. Applies automatically to every conversation.
+
+**Option B — Per-session:** paste `src/copilot/SKILL_copilot.md` as your first message, then upload your data file and describe the figure.
+
+Select **GPT-5.2** (or the latest available model) in the Copilot model picker before starting. Optional: paste `statistics_guide_copilot.md` as a second message before requesting statistical annotations.
+
 ---
 
-For full details, see the variant READMEs: [Claude](src/claude/README_claude.md) | [Gemini](src/gemini/README_gemini.md)
+For full details, see the variant READMEs: [Claude](src/claude/README_claude.md) | [Gemini](src/gemini/README_gemini.md) | [Copilot](src/copilot/README_copilot.md)
 
 ## Output
 
