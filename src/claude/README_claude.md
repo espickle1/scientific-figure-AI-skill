@@ -47,11 +47,14 @@ INGEST → INSTRUCT → CONTEXT → GENERATE → RENDER → PRESENT → FEEDBACK
 
 ## Output
 
-A single `.py` file in jupytext percent format. Cell markers (`# %%` for code, `# %% [markdown]` for prose) are plain Python comments, so the same file:
+Every iteration delivers **both** a `.py` script and a matching `.ipynb` notebook (plus the rendered PNG/SVG figures). The `.py` file is in jupytext percent format — its Save cell calls `jupytext` to write the `.ipynb` companion automatically, so the two files always stay in sync.
 
-- Runs as a script: `python figure_vN.py`
+The `.py` file:
+
+- Runs as a script: `python figure_vN.py` (produces PNG, SVG, **and** `figure_vN.ipynb`)
 - Opens as a notebook (no conversion) in VS Code, Cursor, PyCharm Pro, or JupyterLab with the jupytext extension
-- Converts to a real `.ipynb` for Colab in one step: `pip install jupytext && jupytext --to ipynb figure_vN.py`
+
+The `.ipynb` file is Colab-ready — upload directly via **File → Upload notebook**, no conversion needed.
 
 Cell layout: Title → Setup → Imports → Config → Load → Transform → Plot → Save, with a one-line markdown cell above each code cell explaining why that step exists.
 
@@ -135,8 +138,9 @@ README.md                    # This file
 
 Core:
 ```
-matplotlib seaborn pandas numpy scipy adjustText statsmodels openpyxl
+matplotlib seaborn pandas numpy scipy adjustText statsmodels openpyxl jupytext
 ```
+`jupytext` is required so each generated script can write its `.ipynb` companion.
 
 Optional (installed on demand): `plotnine`, `statannotations`, `scikit-posthocs`, `svgutils`.
 

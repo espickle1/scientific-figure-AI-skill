@@ -10,6 +10,7 @@ Generate publication-quality figures from CSV/TSV/XLSX data. Iterative loop: aud
 4. **If the user requests visual changes after stats were added, strip all statistics code.** User must re-request stats when visual design is finalized.
 5. **Never hardcode p-values, significance stars, or test statistics.** All annotations must read from runtime-computed variables.
 6. **Do not import** statsmodels, statannotations, scikit_posthocs, plotnine, or adjustText. These are not available.
+7. **`jupytext` is the one allowed install.** The Save cell uses it to also write an `.ipynb` companion. If `jupytext` isn't pre-installed, run `!pip install jupytext -q` in a setup cell once before executing the script. No other packages may be installed.
 
 ## Workflow
 
@@ -35,7 +36,7 @@ Canonical cell layout — every code cell is preceded by a one-line `# %% [markd
 5. **Load** — read the data file; last expression `df.head()`.
 6. **Transform** — all filtering, exclusions, derived columns. Nothing above here.
 7. **Plot** — figure construction, ending with `plt.show()`.
-8. **Save** — `fig.savefig(...)` for PNG (and SVG if requested).
+8. **Save** — `fig.savefig(...)` for PNG (and SVG if requested), then export an `.ipynb` companion via the `jupytext` Python API so every iteration produces a notebook automatically.
 
 Skeleton:
 
@@ -46,9 +47,9 @@ Skeleton:
 
 # %% [markdown]
 # ## Setup
-# Required: matplotlib seaborn pandas numpy openpyxl scipy.
+# Required: matplotlib seaborn pandas numpy openpyxl scipy jupytext.
 # Fresh Colab kernel? In a cell, run:
-# `!pip install matplotlib seaborn pandas numpy openpyxl scipy`
+# `!pip install matplotlib seaborn pandas numpy openpyxl scipy jupytext`
 
 # %% [markdown]
 # ## Imports
@@ -97,15 +98,22 @@ plt.show()
 
 # %%
 fig.savefig("figure_v1.png", dpi=300, bbox_inches="tight")
+
+# Export .ipynb companion of this script.
+try:
+    import jupytext
+    jupytext.write(jupytext.read("figure_v1.py"), "figure_v1.ipynb")
+except (ImportError, FileNotFoundError):
+    pass
 ```
 
-Use only: matplotlib, seaborn, numpy, pandas, scipy, openpyxl, scikit-learn. Every Plot cell ends with `plt.show()` so Gemini renders inline. The Save cell writes to the sandbox; files are ephemeral but execution succeeds and the script remains portable.
+Use only: matplotlib, seaborn, numpy, pandas, scipy, openpyxl, scikit-learn — plus `jupytext` for the `.ipynb` export. Every Plot cell ends with `plt.show()` so Gemini renders inline. The Save cell writes to the sandbox; files are ephemeral but execution succeeds and the script remains portable. The `try/except` lets the script still succeed when `jupytext` isn't installed or when cells are run interactively (no `.py` on disk); in the standard sandbox workflow `jupytext` is installed during Setup, so the `.ipynb` is produced every run.
 
 ### 4. RENDER
 Execute the script. If it fails, fix and retry without asking the user. Do not install packages — use only pre-installed libraries. If execution exceeds 30 seconds, simplify: downsample data, skip KDE, reduce matrix size.
 
 ### 5. PRESENT
-Display the rendered figure inline. Always show the complete Python script in a code block (user needs the copy button for restarts). Give a brief one-line summary.
+Display the rendered figure inline. Always show the complete Python script in a code block (user needs the copy button for restarts). Confirm that the Save cell also wrote `figure_vN.ipynb` to the sandbox and offer it as a download alongside the PNG. Give a brief one-line summary.
 
 ### 6. ITERATE
 Edit the existing script — do not rewrite from scratch. Update the version number in the header comment. If the user requests a visual change and the script contains statistics, strip the stats section and note: "Statistics removed — request them again when your visual design is finalized."
@@ -185,3 +193,7 @@ Before displaying: readable text at print size, labeled axes with units, colorbl
 ## Vector Output Note
 
 Gemini displays figures inline as PNG only. For SVG or PDF output needed for journal submission, the user should run the generated script in Google Colab or a local Python environment. Include this note when relevant.
+
+## Notebook Export
+
+Every iteration also produces a `figure_vN.ipynb` notebook via the `jupytext` call in the Save cell. The user can download it directly from the sandbox or upload it to Colab via **File → Upload notebook**. No separate conversion step is needed.

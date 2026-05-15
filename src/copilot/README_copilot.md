@@ -66,15 +66,15 @@ Copilot reads the file directly. No preprocessing needed.
 
 ## Running the generated script
 
-The script is a self-contained `.py` file in jupytext percent format. Three ways to run it:
+The script is a self-contained `.py` file in jupytext percent format. Its Save cell calls `jupytext` so every run also writes a matching `figure_vN.ipynb` — you get both formats with no extra step. Three ways to run it:
 
 | Environment | How |
 |---|---|
-| **Local terminal** | `python figure_v1.py` |
-| **VS Code / JupyterLab** | Open the file — cell markers (`# %%`) are recognized as notebook cells with the jupytext extension |
-| **Google Colab** | `pip install jupytext && jupytext --to ipynb figure_v1.py`, then open the `.ipynb` |
+| **Local terminal** | `pip install jupytext` (once), then `python figure_v1.py` |
+| **VS Code / JupyterLab** | Open the `.py` directly — cell markers (`# %%`) are recognized as notebook cells with the jupytext extension. Or open the generated `figure_v1.ipynb`. |
+| **Google Colab** | Run `python figure_v1.py` locally first to generate `figure_v1.ipynb`, then upload it via **File → Upload notebook**. (Alternative: paste the `.py` contents into a single Colab cell.) |
 
-The script saves PNG (300 DPI) and SVG outputs alongside itself.
+Each run produces `figure_v1.png` (300 DPI), `figure_v1.svg`, and `figure_v1.ipynb` alongside the script.
 
 ---
 
@@ -97,8 +97,8 @@ INGEST → INSTRUCT → CONTEXT → GENERATE → PRESENT → FEEDBACK → ITERAT
 | **INGEST** | Read uploaded file; print shape, dtypes, first rows, missing values |
 | **INSTRUCT** | Gather specs (chart type, columns, hue, labels, palette, stats, journal). Ambiguous column/row selections are confirmed — not guessed |
 | **CONTEXT** | Load prior iteration code if revising; skip otherwise |
-| **GENERATE** | Write a self-contained jupytext `.py` script with a `CONFIG` dict for all tunables |
-| **PRESENT** | Output summary + complete script in a code block (always) |
+| **GENERATE** | Write a self-contained jupytext `.py` script with a `CONFIG` dict for all tunables. Save cell calls `jupytext` so every run also produces `figure_vN.ipynb` |
+| **PRESENT** | Output summary + complete script in a code block (always). Running it produces PNG, SVG, **and** `.ipynb` |
 | **FEEDBACK** | Invite revision: layout, colors, typography, data transforms, annotations |
 | **ITERATE** | Edit existing script, bump `figure_v1` → `figure_v2`. Statistics stripped during visual edits, recomputed fresh as the final layer |
 
@@ -110,7 +110,7 @@ INGEST → INSTRUCT → CONTEXT → GENERATE → PRESENT → FEEDBACK → ITERAT
 |---|---|
 | Figure size | 7 × 5 in (178 × 127 mm) |
 | DPI | 300 |
-| Output | PNG + SVG |
+| Output | PNG + SVG + `.ipynb` (auto-generated via jupytext) |
 | Palette | Wong colorblind-safe |
 | Font | Arial → Helvetica → DejaVu Sans (auto-detected) |
 | Style | White background, despined axes |

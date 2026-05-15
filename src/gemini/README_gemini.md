@@ -166,34 +166,23 @@ Statistics are always computed fresh from your data at runtime. The script never
 
 ## Output Formats
 
-Gemini displays figures inline as PNG at 300 DPI. This is sufficient for most review and draft purposes.
+Gemini displays figures inline as PNG at 300 DPI and writes two artifacts to the sandbox every iteration: `figure_vN.py` (the script) and `figure_vN.ipynb` (the matching notebook, produced automatically by the Save cell via `jupytext`). Download whichever you need.
 
-**The generated script is a single `.py` file in jupytext percent format** — cell markers (`# %%`) are plain comments, so it runs as a regular script *and* opens as a notebook in any percent-aware environment. Pick whichever path matches your tools.
+**The script is in jupytext percent format** — cell markers (`# %%`) are plain comments, so it runs as a regular script *and* opens as a notebook in any percent-aware environment. The `.ipynb` is a true notebook, Colab-ready out of the box.
 
 ### Run as a script (simplest)
 
-Save the script as `figure_vN.py`, put your data file alongside it, and run `python figure_vN.py`. The figure saves to `figure_vN.png` (and `.svg` if requested).
+Save the script as `figure_vN.py`, put your data file alongside it, and run `python figure_vN.py`. This produces `figure_vN.png`, `figure_vN.svg` (if requested), and `figure_vN.ipynb`.
 
 ### Open as a notebook in your IDE (no conversion)
 
-VS Code, Cursor, PyCharm Pro, and JupyterLab (with the jupytext extension) open percent-format `.py` files directly as notebooks. Each `# %%` becomes a cell, each `# %% [markdown]` becomes a markdown cell. Run cells individually or all at once.
+VS Code, Cursor, PyCharm Pro, and JupyterLab (with the jupytext extension) open percent-format `.py` files directly as notebooks. Or open the `.ipynb` directly — same content.
 
-### Convert to a true `.ipynb` for Google Colab
+### Run in Google Colab (no conversion)
 
-Colab itself only opens `.ipynb`. Two options:
+Upload `figure_vN.ipynb` to [colab.research.google.com](https://colab.research.google.com) via **File → Upload notebook**. No `jupytext` install needed — the notebook is already in `.ipynb` form.
 
-**Option A — convert locally first** (best if you want a real notebook in Colab):
-```bash
-pip install jupytext
-jupytext --to ipynb figure_vN.py
-```
-Then upload `figure_vN.ipynb` to [colab.research.google.com](https://colab.research.google.com) via **File → Upload notebook**.
-
-**Option B — paste into a single cell** (fastest if you don't need cell structure):
-1. Copy the script from Gemini
-2. Open a new Colab notebook, paste into one cell
-3. Upload your data file via the folder icon
-4. Run the cell. The `# %%` markers act as inline comments — the figure still renders.
+If you only have the `.py` (e.g., you copied it from chat without downloading the `.ipynb`), paste it into a single Colab cell — the `# %%` markers act as inline comments and the figure still renders.
 
 ### Saving SVG / PDF for journal submission
 

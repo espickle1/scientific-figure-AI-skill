@@ -10,7 +10,7 @@ Iterative loop: ingest data → gather specs → generate code → present → c
 2. **INSTRUCT** — Gather: plot type, x/y columns, hue/facet, title, labels, figsize, palette, error bars, stat annotations, output format, target journal. Apply defaults (below) for anything unspecified. If vague, propose a plot type based on the audit but ask the user to confirm column mappings before proceeding. **Data selection is the user's responsibility**: if the prompt is ambiguous about which columns, rows, subsets, or transformations to use, ask the user — do not guess.
 3. **CONTEXT** — If user provides a previous figure or references a prior iteration, load that code/image first. Otherwise skip. **Reference images are general examples only**: do not extract exact measurements, hex colors, font sizes, or layout structure from uploaded images. Do not reverse-engineer figure schemas from user descriptions, text, or numbers. The user's explicit instructions always override journal presets and reference images.
 4. **GENERATE** — Write a self-contained Python script in jupytext percent format (see Script Format below). Put tunables in a `CONFIG` dict at the top. Use relative data path. If stats are needed, refer to `statistics_guide_copilot.md` if the user has pasted it, otherwise use the guidance in the Statistics section below. All data transformations — filtering, exclusions, type conversions, derived columns, aggregations — must be in the script. Never apply data modifications in separate code blocks that won't be preserved.
-5. **PRESENT** — Output **(a)** a brief summary of what was generated, **(b)** the complete Python script in a fenced `python` code block — always, never skip this. The user runs the script locally or in Colab; do not attempt to execute it.
+5. **PRESENT** — Output **(a)** a brief summary of what was generated, **(b)** the complete Python script in a fenced `python` code block — always, never skip this. Note that running the script produces `figure_vN.png`, `figure_vN.svg`, **and** `figure_vN.ipynb` (the Save cell calls `jupytext` to write the notebook companion automatically). The user runs the script locally or in Colab; do not attempt to execute it.
 6. **FEEDBACK** — Invite revision. Common axes: layout, colors, typography, data transforms, annotations, style, format.
 7. **ITERATE** — Edit existing script (don't rewrite from scratch). Bump filename: `figure_v1` → `figure_v2`. Return to step 4. Halt when user approves or 10 iterations reached. On final delivery, include all requested formats + script + changelog if >2 iterations. **Statistics rule**: when iterating, strip all statistics code and annotations from the script before making visual edits. If the user still wants statistics, recompute from raw data after visual changes are finalized. Statistics are always the last layer applied, always computed fresh — never carried forward from a previous iteration.
 
@@ -27,7 +27,7 @@ Canonical cell layout — every code cell is preceded by a one-line `# %% [markd
 5. **Load** — read the data file; last expression is `df.head()` so the cell renders the preview.
 6. **Transform** — all filtering, exclusions, type conversions, derived columns. Nothing above here.
 7. **Plot** — figure construction, ending with `plt.show()`.
-8. **Save** — `fig.savefig(...)` for PNG and SVG.
+8. **Save** — `fig.savefig(...)` for PNG and SVG, then export an `.ipynb` companion of the script via the `jupytext` Python API so every run also writes a Colab-ready notebook.
 
 Keep cells under ~60 lines; split if longer. Statistics, when present, get their own cells between Transform and Plot, with a markdown cell stating the test and the null hypothesis.
 
@@ -40,9 +40,9 @@ Skeleton:
 
 # %% [markdown]
 # ## Setup
-# Required: matplotlib seaborn pandas numpy openpyxl scipy.
+# Required: matplotlib seaborn pandas numpy openpyxl scipy jupytext.
 # Fresh Colab/Jupyter kernel? In a cell, run:
-# `!pip install matplotlib seaborn pandas numpy openpyxl scipy`
+# `!pip install matplotlib seaborn pandas numpy openpyxl scipy jupytext`
 
 # %% [markdown]
 # ## Imports
@@ -97,7 +97,16 @@ plt.show()
 # %%
 fig.savefig("figure_v1.png", dpi=300, bbox_inches="tight")
 fig.savefig("figure_v1.svg", bbox_inches="tight")
+
+# Export .ipynb companion of this script.
+try:
+    import jupytext
+    jupytext.write(jupytext.read("figure_v1.py"), "figure_v1.ipynb")
+except (ImportError, FileNotFoundError):
+    pass
 ```
+
+The Save cell swallows `ImportError` / `FileNotFoundError` so the script still succeeds when `jupytext` isn't installed or when cells are run interactively without the `.py` file on disk — but in the standard workflow `jupytext` is in the Setup list, so the `.ipynb` is produced every run. Bump the filename literals (`figure_v1.py`, `figure_v1.ipynb`) when you bump the version.
 
 ## Defaults
 
@@ -172,9 +181,9 @@ How many groups?
 ## Dependencies
 
 ```bash
-pip install matplotlib seaborn pandas numpy openpyxl scipy adjustText statsmodels --break-system-packages -q
+pip install matplotlib seaborn pandas numpy openpyxl scipy adjustText statsmodels jupytext --break-system-packages -q
 ```
-Install on demand: `plotnine`, `statannotations`, `scikit-posthocs`, `svgutils`.
+`jupytext` is required so the Save cell can write the `.ipynb` companion. Install on demand: `plotnine`, `statannotations`, `scikit-posthocs`, `svgutils`.
 
 ## Tips
 
